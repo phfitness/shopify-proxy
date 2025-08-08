@@ -1,23 +1,27 @@
+import fetch from 'node-fetch';
+
 export default async function handler(req, res) {
-  const fetch = (await import('node-fetch')).default;
-
-  const shopUrl = "https://phfitnesswereld.myshopify.com";
-  const token = process.env.SHOPIFY_TOKEN;
-
-  const endpoint = "/admin/api/2024-07/products.json?limit=250";
+  const shopifyDomain = 'phfitnesswereld.myshopify.com';
+  const accessToken = process.env.SHOPIFY_ACCESS_TOKEN; // Haalt token veilig uit Vercel
 
   try {
-    const shopifyResponse = await fetch(`${shopUrl}${endpoint}`, {
-      method: "GET",
+    const response = await fetch(`https://${shopifyDomain}/admin/api/2024-07/products.json?limit=5`, {
+      method: 'GET',
       headers: {
-        "X-Shopify-Access-Token": token,
-        "Content-Type": "application/json"
+        'X-Shopify-Access-Token': accessToken,
+        'Content-Type': 'application/json'
       }
     });
 
-    const data = await shopifyResponse.json();
-    res.status(shopifyResponse.status).json(data);
+    if (!response.ok) {
+      throw new Error(`Shopify API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    res.status(200).json(data);
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch products from Shopify' });
   }
 }

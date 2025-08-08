@@ -1,8 +1,9 @@
-import fetch from 'node-fetch';
-
 export default async function handler(req, res) {
   const shopifyDomain = 'phfitnesswereld.myshopify.com';
-  const accessToken = process.env.SHOPIFY_ACCESS_TOKEN; // ← uit Environment halen
+  const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
+
+  // Dynamic import van node-fetch
+  const fetch = (await import('node-fetch')).default;
 
   try {
     const response = await fetch(`https://${shopifyDomain}/admin/api/2024-07/products.json?limit=5`, {
